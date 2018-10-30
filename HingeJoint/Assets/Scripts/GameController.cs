@@ -6,8 +6,8 @@ using System.IO.Ports;
 
 public class GameController : MonoBehaviour {
 
-	private SerialPort stream1 = new SerialPort("\\\\.\\COM17", 9600);
-	//private SerialPort stream2 = new SerialPort("\\\\.\\COM11", 9600);
+	private SerialPort stream1 = new SerialPort("\\\\.\\COM15", 9600);
+	private SerialPort stream2 = new SerialPort("\\\\.\\COM17", 9600);
 	private Vector3 temp1;
 	private Vector3 temp2;
 
@@ -24,10 +24,10 @@ public class GameController : MonoBehaviour {
 	void Start () {
 		stream1.Open();
 		stream1.ReadTimeout = 25;
-		//stream2.Open();
-		//stream2.ReadTimeout = 25;
+		stream2.Open();
+		stream2.ReadTimeout = 25;
 		StartCoroutine (readString1 ());
-		//StartCoroutine (readString2 ());
+		StartCoroutine (readString2 ());
 	}
 	
 	// Update is called once per frame
@@ -58,8 +58,9 @@ public class GameController : MonoBehaviour {
 					string value = stream1.ReadLine();
 					Debug.Log(float.Parse(value));
 					temp1 = transform.rotation.eulerAngles;
-					temp1.z = Mathf.Clamp(float.Parse(value),-15,15);
-					player1.transform.rotation = Quaternion.Euler(temp1);
+					temp1.z = Mathf.Clamp(float.Parse(value),-20,20);
+					player1.transform.rotation = Quaternion.Euler(temp1 * -1);
+					Debug.Log("Port1");
 			
 
 				}
@@ -77,18 +78,18 @@ public class GameController : MonoBehaviour {
 
 		while (true) {
 
-			//if (stream2.IsOpen) 
+			if (stream2.IsOpen) 
 			{
 				try
 				{
 
 					string value = stream1.ReadLine();
-					string[] values = value.Split(',');
 					//Debug.Log(values[0]);
-					Debug.Log(float.Parse(values[0]));
+					Debug.Log(float.Parse(value));
 					temp1 = transform.rotation.eulerAngles;
-					temp1.z = Mathf.Clamp(float.Parse(values[0]),-15,15);
-					player2.transform.rotation = Quaternion.Euler(temp1);
+					temp1.z = Mathf.Clamp(float.Parse(value),-20, 20);
+					player2.transform.rotation = Quaternion.Euler(temp1 * -1);
+					Debug.Log("Port2");
 
 				}
 				catch (System.Exception) {
@@ -96,7 +97,7 @@ public class GameController : MonoBehaviour {
 				}
 			}
 
-			yield return null;
+		yield return null;
 		}
 	}
 }
